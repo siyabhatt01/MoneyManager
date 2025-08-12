@@ -12,6 +12,7 @@ import com.sb.moneymanager.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,25 @@ public class IncomeService {
         incomeRepository.delete(entity);
     }
 
+    public List<IncomeDTO> getLatest5IncomesForCurrentUser()
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        List<IncomeEntity> list = incomeRepository.findTop5ByProfileIdOrderByDateDesc(currentProfile.getId());
+        List<IncomeDTO>dtos=new ArrayList<>();
+        for(IncomeEntity l: list)
+        {
+            dtos.add(toDTO(l));
+        }
+        return dtos;
+    }
+
+    public BigDecimal getTotalIncomesForCurrentUser()
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        BigDecimal totalIncome = incomeRepository.findTotalExpenseByProfileId(currentProfile.getId());
+        return totalIncome!=null ? totalIncome :BigDecimal.ZERO;
+    }
+
     //helper functions
     private IncomeEntity toEntity(IncomeDTO incomeDTO, ProfileEntity profile, CategoryEntity category)
     {
@@ -80,6 +100,7 @@ public class IncomeService {
     {
         return IncomeDTO.builder()
                 .id(entity.getId())
+                .date(entity.getDate())
                 .name(entity.getName())
                 .icon(entity.getIcon())
                 .categoryId(entity.getCategory()!=null ? entity.getCategory().getId():null)

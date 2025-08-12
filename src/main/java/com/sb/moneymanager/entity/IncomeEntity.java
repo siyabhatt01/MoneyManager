@@ -25,6 +25,7 @@ public class IncomeEntity {
     private Long id;
     private String name;
     private String icon;
+    @Column(nullable = false)
     private LocalDate date;
     private BigDecimal amount;
 

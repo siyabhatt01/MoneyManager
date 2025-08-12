@@ -10,6 +10,7 @@ import com.sb.moneymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,25 @@ public class ExpenseService {
         expenseRepository.delete(entity);
     }
 
+    public List<ExpenseDTO> getLatest5ExpensesForCurrentUser()
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        List<ExpenseEntity> list = expenseRepository.findTop5ByProfileIdOrderByDateDesc(currentProfile.getId());
+        List<ExpenseDTO>dtos=new ArrayList<>();
+        for(ExpenseEntity l: list)
+        {
+            dtos.add(toDTO(l));
+        }
+        return dtos;
+    }
+
+    public BigDecimal getTotalExpenseForCurrentUser()
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        BigDecimal totalExpense = expenseRepository.findTotalExpenseByProfileId(currentProfile.getId());
+        return totalExpense!=null ? totalExpense :BigDecimal.ZERO;
+    }
+
     //helper functions
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category)
     {
@@ -85,6 +105,7 @@ public class ExpenseService {
                 .amount(entity.getAmount())
                 .updatedAt(entity.getUpdatedAt())
                 .createdAt(entity.getCreatedAt())
+                .date(entity.getDate())
                 .build();
 
     }
