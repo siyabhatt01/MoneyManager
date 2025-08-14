@@ -2,12 +2,15 @@ package com.sb.moneymanager.service;
 
 import com.sb.moneymanager.dto.CategoryDTO;
 import com.sb.moneymanager.dto.ExpenseDTO;
+import com.sb.moneymanager.dto.IncomeDTO;
 import com.sb.moneymanager.entity.CategoryEntity;
 import com.sb.moneymanager.entity.ExpenseEntity;
+import com.sb.moneymanager.entity.IncomeEntity;
 import com.sb.moneymanager.entity.ProfileEntity;
 import com.sb.moneymanager.repository.CategoryRepository;
 import com.sb.moneymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -79,6 +82,19 @@ public class ExpenseService {
         ProfileEntity currentProfile = profileService.getCurrentProfile();
         BigDecimal totalExpense = expenseRepository.findTotalExpenseByProfileId(currentProfile.getId());
         return totalExpense!=null ? totalExpense :BigDecimal.ZERO;
+    }
+
+    //filter expenses
+    public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate, String keyword, Sort sort)
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(currentProfile.getId(), startDate, endDate, keyword, sort);
+        List<ExpenseDTO>dtos=new ArrayList<>();
+        for(ExpenseEntity l: list)
+        {
+            dtos.add(toDTO(l));
+        }
+        return dtos;
     }
 
     //helper functions

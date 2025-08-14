@@ -10,6 +10,7 @@ import com.sb.moneymanager.repository.CategoryRepository;
 import com.sb.moneymanager.repository.ExpenseRepository;
 import com.sb.moneymanager.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -68,6 +69,19 @@ public class IncomeService {
     {
         ProfileEntity currentProfile = profileService.getCurrentProfile();
         List<IncomeEntity> list = incomeRepository.findTop5ByProfileIdOrderByDateDesc(currentProfile.getId());
+        List<IncomeDTO>dtos=new ArrayList<>();
+        for(IncomeEntity l: list)
+        {
+            dtos.add(toDTO(l));
+        }
+        return dtos;
+    }
+
+    //filter income
+    public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate, String keyword, Sort sort)
+    {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(currentProfile.getId(), startDate, endDate, keyword, sort);
         List<IncomeDTO>dtos=new ArrayList<>();
         for(IncomeEntity l: list)
         {
