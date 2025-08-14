@@ -97,6 +97,18 @@ public class ExpenseService {
         return dtos;
     }
 
+    //notification
+    public List<ExpenseDTO> getExpenseForUserOnDate(Long profileId, LocalDate date)
+    {
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDate(profileId, date);
+        List<ExpenseDTO>dtos=new ArrayList<>();
+        for(ExpenseEntity l: list)
+        {
+            dtos.add(toDTO(l));
+        }
+        return dtos;
+    }
+
     //helper functions
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category)
     {
