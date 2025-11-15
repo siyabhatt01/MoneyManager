@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProfileDTO {
+public class  ProfileDTO {
 
     private Long id;
     private String fullName;

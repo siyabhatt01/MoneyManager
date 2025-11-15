@@ -69,13 +69,30 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager()
-    {
-        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(authenticationProvider);
+//    @Bean
+//    public AuthenticationManager authenticationManager()
+//    {
+//        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
+//        authenticationProvider.setUserDetailsService(userDetailsService);
+//        authenticationProvider.setPasswordEncoder(passwordEncoder());
+//        return new ProviderManager(authenticationProvider);
+//
+//    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) { // 👈 Inject PasswordEncoder here
+
+        // 1. Create the provider, passing the PasswordEncoder into the constructor
+        //    (or a dedicated setter that is not deprecated, but constructor is preferred)
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+
+        // 2. Set the UserDetailsService
+        authenticationProvider.setUserDetailsService(userDetailsService);
+
+        // 3. Set the PasswordEncoder
+        authenticationProvider.setPasswordEncoder(passwordEncoder); // 👈 Correctly using the injected bean
+
+        // 4. Return the ProviderManager
+        return new ProviderManager(authenticationProvider);
     }
 }
